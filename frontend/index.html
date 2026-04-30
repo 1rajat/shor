@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shor — India's Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:    #06060a;
+  --bg2:   #0c0c14;
+  --bg3:   #12121e;
+  --card:  rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --brand:     #8b5cf6;
+  --brand-dim: rgba(139,92,246,0.12);
+  --pos:     #4ade80;  --pos-dim: rgba(74,222,128,0.1);   --pos-glow: rgba(74,222,128,0.22);
+  --neg:     #f87171;  --neg-dim: rgba(248,113,113,0.1);  --neg-glow: rgba(248,113,113,0.22);
+  --neu:     #fbbf24;  --neu-dim: rgba(251,191,36,0.1);   --neu-glow: rgba(251,191,36,0.18);
+  --hot:     #fb923c;  --hot-dim: rgba(251,146,60,0.1);
+  --text:  #f0eeff;  --text2: #8b89a8;  --text3: #44425e;  --text4: #1e1c30;
+  --r: 8px;  --r2: 14px;
+}
+body { font-family:'Space Grotesk',system-ui,sans-serif; background:var(--bg); color:var(--text); height:100vh; overflow:hidden; display:flex; flex-direction:column; font-size:13px; }
+::-webkit-scrollbar { width:3px; } ::-webkit-scrollbar-thumb { background:var(--text4); border-radius:2px; }
+
+/* ── HEADER ── */
+header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--bg); z-index:100; }
+.logo { font-size:20px; font-weight:700; letter-spacing:-0.5px; background:linear-gradient(130deg,#a78bfa,#818cf8,#38bdf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; flex-shrink:0; cursor:pointer; }
+.mood-chip { display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:4px 12px 4px 10px; flex-shrink:0; transition:border-color 0.3s; }
+.mood-label { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
+.mood-track { width:80px; height:3px; background:linear-gradient(to right,var(--neg),var(--neu),var(--pos)); border-radius:2px; position:relative; }
+.mood-thumb { position:absolute; top:-5px; width:13px; height:13px; border-radius:50%; background:var(--text); border:2px solid var(--bg); transform:translateX(-50%); transition:left 0.5s ease; box-shadow:0 0 6px rgba(255,255,255,0.15); }
+.mood-score { font-size:13px; font-weight:700; min-width:30px; }
+.filter-pills { display:flex; gap:4px; flex-shrink:0; }
+.pill { padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; border:1px solid var(--border); background:none; color:var(--text2); cursor:pointer; transition:all 0.1s; font-family:inherit; }
+.pill:hover { border-color:var(--border2); color:var(--text); }
+.pill.active { background:var(--text); color:var(--bg); border-color:transparent; }
+.pill.neg.active { background:var(--neg); color:#000; } .pill.pos.active { background:var(--pos); color:#000; } .pill.neu.active { background:var(--neu); color:#000; }
+.search-wrap { flex:1; max-width:220px; position:relative; }
+.search-wrap input { width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:6px 10px 6px 28px; color:var(--text); font-size:12px; font-family:inherit; outline:none; transition:border-color 0.15s; }
+.search-wrap input:focus { border-color:var(--brand); }
+.search-wrap input::placeholder { color:var(--text3); }
+.search-icon { position:absolute; left:9px; top:50%; transform:translateY(-50%); font-size:13px; color:var(--text3); pointer-events:none; }
+.hdr-right { display:flex; align-items:center; gap:8px; margin-left:auto; flex-shrink:0; }
+.updated-tag { font-size:10px; color:var(--text3); white-space:nowrap; }
+.live-badge { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700; color:var(--text2); }
+.live-dot { width:6px; height:6px; border-radius:50%; background:var(--pos); animation:blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.2} }
+.icon-btn { background:none; border:1px solid var(--border); border-radius:var(--r); padding:5px 10px; color:var(--text2); cursor:pointer; font-size:11px; font-family:inherit; font-weight:500; transition:all 0.1s; }
+.icon-btn:hover { border-color:var(--border2); color:var(--text); }
+.icon-btn:disabled { opacity:0.35; cursor:default; }
+
+/* ── LAYOUT ── */
+.layout { display:flex; flex:1; overflow:hidden; }
+
+/* ── LEFT SIDEBAR ── */
+.sidebar { width:252px; border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; }
+.sb-hdr { display:flex; align-items:center; justify-content:space-between; padding:11px 14px 9px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.sb-title { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; }
+.sb-count { font-size:10px; color:var(--text3); background:var(--bg3); padding:1px 7px; border-radius:10px; }
+.signal-list { overflow-y:auto; flex:1; }
+
+.signal-item { display:flex; align-items:center; gap:9px; padding:9px 13px; cursor:pointer; border-bottom:1px solid var(--border); border-left:2px solid transparent; transition:background 0.1s,border-left-color 0.15s; }
+.signal-item:hover { background:var(--card); }
+.signal-item.active { background:var(--brand-dim); border-left-color:var(--brand); }
+.sig-emoji { font-size:20px; line-height:1; flex-shrink:0; }
+.sig-body { flex:1; min-width:0; }
+.sig-topic { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sig-row { display:flex; align-items:center; gap:5px; margin-top:3px; }
+.sig-score { font-size:14px; font-weight:700; }
+.sig-score.pos{color:var(--pos)} .sig-score.neg{color:var(--neg)} .sig-score.neu{color:var(--neu)}
+.sig-dot { width:2px; height:2px; border-radius:50%; background:var(--text3); }
+.sig-posts { font-size:10px; color:var(--text3); }
+.type-badge { font-size:9px; font-weight:700; letter-spacing:0.5px; padding:2px 6px; border-radius:4px; text-transform:uppercase; flex-shrink:0; white-space:nowrap; }
+.type-badge.spike{background:var(--neg-dim);color:var(--neg)} .type-badge.trending{background:var(--hot-dim);color:var(--hot)} .type-badge.sustained{background:var(--pos-dim);color:var(--pos)}
+
+/* ── MAIN ── */
+.main { flex:1; overflow-y:auto; padding:26px 28px; }
+
+/* ── OVERVIEW ── */
+.overview-hero { margin-bottom:28px; }
+.ov-headline { font-size:22px; font-weight:700; letter-spacing:-0.5px; margin-bottom:6px; }
+.ov-subtitle { font-size:13px; color:var(--text2); line-height:1.6; max-width:560px; }
+.ov-subtitle strong { font-weight:600; }
+.ov-divider { height:1px; background:var(--border); margin:20px 0; }
+.ov-section { margin-bottom:24px; }
+.ov-section-title { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; margin-bottom:12px; }
+.ov-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+.ov-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r2); padding:16px; cursor:pointer; transition:border-color 0.15s,background 0.1s; }
+.ov-card:hover { border-color:var(--border2); background:var(--bg3); }
+.ov-card-top { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.ov-card-emoji { font-size:22px; line-height:1; }
+.ov-card-topic { font-size:13px; font-weight:600; flex:1; }
+.ov-card-score { font-size:18px; font-weight:700; }
+.ov-card-score.pos{color:var(--pos)} .ov-card-score.neg{color:var(--neg)} .ov-card-score.neu{color:var(--neu)}
+.ov-card-vibe { font-size:11px; color:var(--text2); margin-bottom:6px; }
+.ov-card-meta { font-size:10px; color:var(--text3); }
+
+/* ── DEEP DIVE ── */
+.deep-dive { max-width:680px; }
+.back-btn { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:var(--text2); cursor:pointer; margin-bottom:18px; padding:5px 0; transition:color 0.1s; background:none; border:none; font-family:inherit; }
+.back-btn:hover { color:var(--text); }
+
+.hero-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r2); padding:24px 26px; display:flex; gap:24px; align-items:center; margin-bottom:14px; }
+.score-block { display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; width:76px; }
+.score-num { font-size:52px; font-weight:700; letter-spacing:-2px; line-height:1; }
+.score-num.pos{color:var(--pos);text-shadow:0 0 40px var(--pos-glow)} .score-num.neg{color:var(--neg);text-shadow:0 0 40px var(--neg-glow)} .score-num.neu{color:var(--neu);text-shadow:0 0 28px var(--neu-glow)}
+.score-sub { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1px; text-transform:uppercase; }
+.hero-body { flex:1; min-width:0; }
+.hero-topic-row { display:flex; align-items:center; gap:9px; margin-bottom:5px; }
+.hero-emoji { font-size:26px; line-height:1; }
+.hero-topic { font-size:24px; font-weight:700; letter-spacing:-0.5px; }
+.hero-vibe { font-size:12px; color:var(--text2); margin-bottom:12px; }
+.hero-badges { display:flex; gap:7px; flex-wrap:wrap; }
+.hero-badge { font-size:10px; font-weight:600; padding:3px 10px; border-radius:20px; border:1px solid var(--border2); color:var(--text2); }
+
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:13px; }
+.stat-label { font-size:9px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:5px; }
+.stat-val { font-size:20px; font-weight:700; letter-spacing:-0.5px; }
+.stat-hint { font-size:10px; color:var(--text3); margin-top:2px; }
+
+.section { margin-bottom:18px; }
+.sec-title { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; margin-bottom:11px; }
+.chart-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:14px; }
+.trend-svg { width:100%; height:66px; display:block; }
+
+.breakdown-list { display:flex; flex-direction:column; gap:9px; }
+.bd-row { display:flex; align-items:center; gap:9px; }
+.bd-label { font-size:11px; color:var(--text2); width:165px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bd-track { flex:1; height:4px; background:var(--bg3); border-radius:2px; overflow:hidden; }
+.bd-bar { height:100%; border-radius:2px; transition:width 0.5s; }
+.bd-bar.pos{background:var(--pos)} .bd-bar.neg{background:var(--neg)} .bd-bar.neu{background:var(--neu)}
+.bd-num { font-size:11px; font-weight:600; width:34px; text-align:right; flex-shrink:0; }
+.bd-num.pos{color:var(--pos)} .bd-num.neg{color:var(--neg)} .bd-num.neu{color:var(--neu)}
+
+.entities-row { display:flex; flex-wrap:wrap; gap:7px; }
+.entity-chip { display:flex; align-items:center; gap:6px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:5px 12px 5px 7px; cursor:pointer; transition:border-color 0.1s; }
+.entity-chip:hover { border-color:var(--border2); }
+.ent-av { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; flex-shrink:0; }
+.ent-name { font-size:11px; font-weight:500; color:var(--text2); }
+.ent-score { font-size:11px; font-weight:700; }
+.ent-score.pos{color:var(--pos)} .ent-score.neg{color:var(--neg)} .ent-score.neu{color:var(--neu)}
+
+.articles-list { display:flex; flex-direction:column; gap:8px; }
+.article-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:13px; transition:border-color 0.1s; }
+.article-card:hover { border-color:var(--border2); }
+.art-meta { display:flex; align-items:center; gap:7px; margin-bottom:6px; }
+.art-source { font-size:10px; font-weight:700; color:var(--text3); }
+.art-time { font-size:10px; color:var(--text3); }
+.art-sdot { width:6px; height:6px; border-radius:50%; margin-left:auto; flex-shrink:0; }
+.art-text { font-size:12px; line-height:1.65; color:var(--text2); }
+.art-footer { margin-top:9px; }
+.art-link { font-size:11px; font-weight:600; color:var(--brand); text-decoration:none; padding:3px 10px; border:1px solid var(--brand-dim); border-radius:var(--r); transition:background 0.1s; }
+.art-link:hover { background:var(--brand-dim); }
+
+/* ── RIGHT PANEL ── */
+.right-panel { width:206px; border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; }
+.rp-hdr { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; padding:11px 13px 9px; border-bottom:1px solid var(--border); flex-shrink:0; }
+
+.national-mood { padding:14px 13px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.nm-score { font-size:40px; font-weight:700; letter-spacing:-1.5px; line-height:1; }
+.nm-score.pos{color:var(--pos);text-shadow:0 0 28px var(--pos-glow)} .nm-score.neg{color:var(--neg);text-shadow:0 0 28px var(--neg-glow)} .nm-score.neu{color:var(--neu)}
+.nm-label { font-size:11px; color:var(--text2); margin-top:5px; line-height:1.4; }
+.nm-sub   { font-size:10px; color:var(--text3); margin-top:3px; }
+
+.rp-section-hdr { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; padding:11px 13px 9px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.persons-list { overflow-y:auto; flex:1; }
+
+.person-row { display:flex; align-items:center; gap:8px; padding:9px 13px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; }
+.person-row:hover { background:var(--card); }
+.person-av { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+.person-info { flex:1; min-width:0; }
+.person-name { font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.person-meta { font-size:10px; color:var(--text3); margin-top:1px; }
+.person-score { font-size:13px; font-weight:700; flex-shrink:0; }
+.person-score.pos{color:var(--pos)} .person-score.neg{color:var(--neg)} .person-score.neu{color:var(--neu)}
+.rp-empty { padding:18px 13px; font-size:11px; color:var(--text3); text-align:center; }
+
+/* ── PERSONALITY DETAIL (shown in main pane) ── */
+.person-detail { max-width:680px; }
+.pd-hero { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r2); padding:24px 26px; display:flex; gap:20px; align-items:center; margin-bottom:14px; }
+.pd-avatar { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; flex-shrink:0; }
+.pd-info { flex:1; }
+.pd-name { font-size:22px; font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
+.pd-meta { font-size:12px; color:var(--text2); margin-bottom:10px; }
+.pd-score { font-size:48px; font-weight:700; letter-spacing:-2px; line-height:1; }
+.pd-score.pos{color:var(--pos);text-shadow:0 0 36px var(--pos-glow)} .pd-score.neg{color:var(--neg);text-shadow:0 0 36px var(--neg-glow)} .pd-score.neu{color:var(--neu)}
+.pd-vibe { font-size:12px; color:var(--text2); margin-top:4px; }
+.topics-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.topic-chip { font-size:11px; font-weight:600; padding:4px 12px; border-radius:20px; border:1px solid var(--border); color:var(--text2); }
+
+/* ── LOADING ── */
+.spinner-wrap { display:flex; align-items:center; gap:8px; padding:24px 16px; color:var(--text3); font-size:11px; }
+.spinner { width:14px; height:14px; border:2px solid var(--bg3); border-top-color:var(--brand); border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── LIGHT ── */
+.light { --bg:#f5f4f0; --bg2:#eceae4; --bg3:#e2e0d8; --card:rgba(0,0,0,0.02); --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.15); --text:#12111a; --text2:#5a5875; --text3:#9a98b0; --text4:#c8c6d8; }
+.light .logo { background:linear-gradient(130deg,#7c3aed,#4f46e5); -webkit-background-clip:text; background-clip:text; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" id="logoBtn">SHOR</div>
+
+  <div class="mood-chip" id="moodChip">
+    <span class="mood-label" id="moodLabel">VIBE</span>
+    <div class="mood-track"><div class="mood-thumb" id="moodThumb" style="left:50%"></div></div>
+    <span class="mood-score" id="moodScore" style="color:var(--neu)">—</span>
+  </div>
+
+  <div class="filter-pills">
+    <button class="pill active" data-filter="">All</button>
+    <button class="pill neg"    data-filter="neg">Negative</button>
+    <button class="pill pos"    data-filter="pos">Positive</button>
+    <button class="pill neu"    data-filter="neu">Mixed</button>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder="Search topics…" autocomplete="off">
+  </div>
+
+  <div class="hdr-right">
+    <span class="updated-tag" id="updatedTag">—</span>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    <button class="icon-btn" id="refreshBtn">↻ Refresh</button>
+    <button class="icon-btn" id="themeBtn">Light</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sb-hdr">
+      <span class="sb-title">What's Shor-ing</span>
+      <span class="sb-count" id="sbCount">—</span>
+    </div>
+    <div class="signal-list" id="signalList">
+      <div class="spinner-wrap"><div class="spinner"></div> Loading…</div>
+    </div>
+  </aside>
+
+  <main class="main" id="mainPane"></main>
+
+  <aside class="right-panel">
+    <div class="rp-hdr">India's Vibe</div>
+    <div class="national-mood">
+      <div class="nm-score neu" id="nmScore">—</div>
+      <div class="nm-label" id="nmLabel">Loading…</div>
+      <div class="nm-sub"  id="nmSub"></div>
+    </div>
+    <div class="rp-section-hdr">Who's in the News</div>
+    <div class="persons-list" id="personsList">
+      <div class="rp-empty">Loading…</div>
+    </div>
+  </aside>
+
+</div>
+
+<script type="module">
+const API = "http://localhost:8000"
+
+const EMOJI = {
+  Politics:'🏛️', Cricket:'🏏', Economy:'💰', 'Stock Market':'📈',
+  Weather:'🌦️', Education:'📚', 'Petrol Prices':'⛽', Electricity:'⚡',
+  Transport:'🚇', Unemployment:'💼', Budget:'📊', Railways:'🚂',
+  Bollywood:'🎬', Technology:'💻', Crime:'🚨', Health:'🏥',
+  Agriculture:'🌾', Defence:'🛡️', Business:'🏢', Environment:'🌿',
+}
+const TYPE_ICON  = { spike:'🔥', trending:'📈', sustained:'⚡' }
+const TYPE_LABEL = { spike:'SPIKING', trending:'TRENDING', sustained:'SUSTAINED' }
+
+function sc(score) { return score < -10 ? 'neg' : score > 10 ? 'pos' : 'neu' }
+function ss(score) { return (score > 0 ? '+' : '') + score }
+function scol(score) { return score < -10 ? 'var(--neg)' : score > 10 ? 'var(--pos)' : 'var(--neu)' }
+function vibe(score) {
+  if (score <= -60) return 'Very rough 😰'
+  if (score <= -35) return 'Not looking good 😬'
+  if (score <= -10) return 'Kinda negative 😐'
+  if (score < 10)   return 'Mixed vibes 😶'
+  if (score < 35)   return 'Decent tbh 🙂'
+  if (score < 60)   return 'Positive energy 😊'
+  return 'Straight fire 🔥'
+}
+function esc(s) {
+  if (!s) return ''
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ── State ──
+let signals = [], activeId = null, activeFilter = '', searchQuery = '', currentSkip = 0
+const PAGE = 50
+let nationalAvg = 0
+
+// ── Theme ──
+const themeBtn = document.getElementById('themeBtn')
+let dark = true
+themeBtn.addEventListener('click', () => { dark = !dark; document.body.classList.toggle('light',!dark); themeBtn.textContent = dark?'Light':'Dark' })
+
+// ── Logo → overview ──
+document.getElementById('logoBtn').addEventListener('click', () => { activeId = null; renderList(); renderOverview(); resetMood() })
+
+// ── Filters ──
+document.querySelectorAll('.pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'))
+    p.classList.add('active'); activeFilter = p.dataset.filter; currentSkip = 0; loadSignals(true)
+  })
+})
+document.getElementById('searchInput').addEventListener('input', e => { searchQuery = e.target.value.toLowerCase(); renderList() })
+
+// ── Refresh ──
+document.getElementById('refreshBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('refreshBtn')
+  btn.disabled = true; btn.textContent = '↻ Running…'
+  try {
+    await fetch(`${API}/api/signals/refresh`, { method:'POST' })
+    const poll = setInterval(async () => {
+      const st = await fetch(`${API}/api/status`).then(r => r.json()).catch(() => null)
+      if (st && !st.refresh_running) {
+        clearInterval(poll); btn.disabled = false; btn.textContent = '↻ Refresh'
+        loadSignals(true); loadPersonalities()
+      }
+    }, 3000)
+  } catch { btn.disabled = false; btn.textContent = '↻ Refresh' }
+})
+
+// ── Load signals ──
+async function loadSignals(reset = false) {
+  if (reset) { currentSkip = 0; signals = [] }
+  try {
+    const qs = `limit=${PAGE}&skip=${currentSkip}${activeFilter ? `&sentiment=${activeFilter}` : ''}`
+    const page = await fetch(`${API}/api/signals?${qs}`).then(r => r.json())
+    signals = reset ? page : [...signals, ...page]
+    currentSkip += page.length
+    renderList(page.length === PAGE)
+    updateMoodGlobal()
+    pollStatus()
+    if (!activeId) renderOverview()
+  } catch {
+    document.getElementById('signalList').innerHTML =
+      '<div style="padding:14px;color:var(--text3);font-size:11px">Backend offline — run python run.py</div>'
+  }
+}
+
+async function pollStatus() {
+  try {
+    const st = await fetch(`${API}/api/status`).then(r => r.json())
+    if (st.last_refresh) {
+      const m = Math.round((Date.now() - new Date(st.last_refresh).getTime()) / 60000)
+      document.getElementById('updatedTag').textContent = m < 1 ? 'just now' : `${m}m ago`
+    }
+  } catch {}
+}
+
+// ── Render sidebar ──
+function renderList(hasMore = false) {
+  const list = signals.filter(s => !searchQuery || s.topic.toLowerCase().includes(searchQuery))
+  document.getElementById('sbCount').textContent = list.length
+  if (!list.length) {
+    document.getElementById('signalList').innerHTML = '<div style="padding:14px;color:var(--text3);font-size:11px">No signals yet. Data refreshing…</div>'
+    return
+  }
+  const html = list.map(s => {
+    const cls = sc(s.score)
+    return `<div class="signal-item${s.id===activeId?' active':''}" data-id="${s.id}" role="button" tabindex="0">
+      <div class="sig-emoji">${EMOJI[s.topic]||'📰'}</div>
+      <div class="sig-body">
+        <div class="sig-topic">${esc(s.topic)}</div>
+        <div class="sig-row">
+          <span class="sig-score ${cls}">${ss(s.score)}</span>
+          <div class="sig-dot"></div>
+          <span class="sig-posts">${s.post_count} stories</span>
+        </div>
+      </div>
+      <div class="type-badge ${s.signal_type}">${TYPE_ICON[s.signal_type]||''} ${TYPE_LABEL[s.signal_type]||s.signal_type}</div>
+    </div>`
+  }).join('')
+  const more = hasMore ? `<div style="padding:10px 13px"><button onclick="loadSignals(false)" style="width:100%;background:none;border:1px solid var(--border);border-radius:var(--r);padding:7px;color:var(--text2);cursor:pointer;font-family:inherit;font-size:11px">Load more</button></div>` : ''
+  document.getElementById('signalList').innerHTML = html + more
+  document.querySelectorAll('.signal-item').forEach(el => {
+    el.addEventListener('click', () => openSignal(el.dataset.id))
+    el.addEventListener('keydown', e => e.key==='Enter' && openSignal(el.dataset.id))
+  })
+}
+
+// ── Mood helpers ──
+function updateMoodGlobal() {
+  if (!signals.length) return
+  nationalAvg = Math.round(signals.reduce((a,s) => a+s.score,0) / signals.length)
+  setMood(nationalAvg, 'VIBE')
+  document.getElementById('nmScore').textContent = ss(nationalAvg)
+  document.getElementById('nmScore').className = `nm-score ${sc(nationalAvg)}`
+  document.getElementById('nmLabel').textContent = vibe(nationalAvg)
+  document.getElementById('nmSub').textContent = `avg across ${signals.length} topics`
+}
+function setMood(score, label) {
+  document.getElementById('moodThumb').style.left = ((score+100)/200*100)+'%'
+  document.getElementById('moodScore').textContent = ss(score)
+  document.getElementById('moodScore').style.color = scol(score)
+  document.getElementById('moodLabel').textContent = label
+}
+function resetMood() { setMood(nationalAvg, 'VIBE') }
+
+// ── Overview (homepage) ──
+function renderOverview() {
+  if (!signals.length) {
+    document.getElementById('mainPane').innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;text-align:center">
+        <div style="font-size:48px;opacity:0.2">🔊</div>
+        <div style="font-size:16px;font-weight:600;color:var(--text2)">Kya chal raha hai?</div>
+        <div style="font-size:12px;color:var(--text3)">Data is being fetched — first refresh takes ~5 minutes</div>
+        <div class="spinner-wrap" style="justify-content:center"><div class="spinner"></div></div>
+      </div>`
+    return
+  }
+
+  const totalPosts = signals.reduce((a,s) => a+s.post_count, 0)
+  const spikes    = signals.filter(s => s.signal_type==='spike')
+  const trending  = signals.filter(s => s.signal_type==='trending')
+  const sustained = signals.filter(s => s.signal_type==='sustained')
+
+  // build top aspects summary text
+  const topAspects = signals.flatMap(s => (s.breakdown||[]).slice(0,1)).slice(0,5).map(b => b.aspect).filter(Boolean)
+  const aspectText = topAspects.length ? `Headlines include: <em>${topAspects.join(', ')}</em>.` : ''
+
+  document.getElementById('mainPane').innerHTML = `
+    <div style="max-width:720px">
+      <div class="overview-hero">
+        <div class="ov-headline">🔊 What's making noise in India right now</div>
+        <div class="ov-subtitle">
+          India's mood is <strong style="color:${scol(nationalAvg)}">${vibe(nationalAvg)}</strong>
+          with an average vibe score of <strong style="color:${scol(nationalAvg)}">${ss(nationalAvg)}</strong>.
+          Tracking <strong>${signals.length} topics</strong> across <strong>${totalPosts} stories</strong> from 45+ news sources in the last 24h.
+          ${aspectText}
+        </div>
+      </div>
+      <div class="ov-divider"></div>
+      ${spikes.length ? ovSection('🔥 SPIKING NOW — Breaking through the noise', spikes) : ''}
+      ${trending.length ? ovSection('📈 TRENDING — Picking up fast', trending) : ''}
+      ${sustained.length ? ovSection('⚡ SUSTAINED — Ongoing stories', sustained) : ''}
+    </div>`
+
+  document.querySelectorAll('.ov-card').forEach(el => {
+    el.addEventListener('click', () => openSignal(el.dataset.id))
+  })
+}
+
+function ovSection(title, list) {
+  return `<div class="ov-section">
+    <div class="ov-section-title">${title}</div>
+    <div class="ov-grid">
+      ${list.map(s => {
+        const cls = sc(s.score)
+        const aspects = (s.breakdown||[]).slice(0,2).map(b => esc(b.aspect)).join(' · ')
+        return `<div class="ov-card" data-id="${s.id}">
+          <div class="ov-card-top">
+            <span class="ov-card-emoji">${EMOJI[s.topic]||'📰'}</span>
+            <span class="ov-card-topic">${esc(s.topic)}</span>
+            <span class="ov-card-score ${cls}">${ss(s.score)}</span>
+          </div>
+          <div class="ov-card-vibe">${vibe(s.score)}</div>
+          ${aspects ? `<div class="ov-card-meta" style="margin-bottom:4px;font-size:10px;color:var(--text2)">${aspects}</div>` : ''}
+          <div class="ov-card-meta">${s.post_count} stories · ${esc(s.region)}</div>
+        </div>`
+      }).join('')}
+    </div>
+  </div>`
+}
+
+// ── Open signal detail ──
+async function openSignal(id) {
+  activeId = id
+  renderList()
+  document.getElementById('mainPane').innerHTML =
+    '<div class="spinner-wrap" style="justify-content:center;padding:60px 0"><div class="spinner"></div></div>'
+  try {
+    const s = await fetch(`${API}/api/signals/${id}`).then(r => r.json())
+    renderDetail(s)
+    setMood(s.score, s.topic.toUpperCase())
+  } catch {
+    document.getElementById('mainPane').innerHTML = '<div style="padding:40px;color:var(--text3)">Failed to load signal.</div>'
+  }
+}
+
+// ── Signal detail ──
+function renderDetail(s) {
+  const cls = sc(s.score)
+  document.getElementById('mainPane').innerHTML = `
+  <div class="deep-dive">
+    <button class="back-btn" id="backBtn">← All topics</button>
+
+    <div class="hero-card">
+      <div class="score-block">
+        <div class="score-num ${cls}">${ss(s.score)}</div>
+        <div class="score-sub">out of ±100</div>
+      </div>
+      <div class="hero-body">
+        <div class="hero-topic-row"><span class="hero-emoji">${EMOJI[s.topic]||'📰'}</span><span class="hero-topic">${esc(s.topic)}</span></div>
+        <div class="hero-vibe">${vibe(s.score)}</div>
+        <div class="hero-badges">
+          <span class="hero-badge">${TYPE_ICON[s.signal_type]||''} ${TYPE_LABEL[s.signal_type]||s.signal_type}</span>
+          <span class="hero-badge">📍 ${esc(s.region)}</span>
+          <span class="hero-badge">🕐 ${s.duration_hours}h window</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Stories</div><div class="stat-val">${s.post_count}</div><div class="stat-hint">last ${s.duration_hours}h</div></div>
+      <div class="stat-card"><div class="stat-label">Spike Rate</div><div class="stat-val">${s.spike_rate}%</div><div class="stat-hint">${s.signal_type}</div></div>
+      <div class="stat-card"><div class="stat-label">Organic</div><div class="stat-val" style="color:var(--pos)">${Math.round((s.fact_check?.confidence||0)*100)}%</div><div class="stat-hint">${s.fact_check?.verdict||'—'}</div></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">24-Hour Activity</div>
+      <div class="chart-wrap">${trendSVG(s.trend, cls)}</div>
+    </div>
+
+    ${s.breakdown?.length ? breakdownHTML(s.breakdown) : ''}
+    ${s.entities?.length  ? entitiesHTML(s.entities)   : ''}
+    ${s.posts?.length     ? articlesHTML(s.posts)       : ''}
+  </div>`
+
+  document.getElementById('backBtn').addEventListener('click', () => { activeId = null; renderList(); renderOverview(); resetMood() })
+  document.querySelectorAll('.entity-chip[data-name]').forEach(el => {
+    el.addEventListener('click', () => openPersonality(el.dataset.name))
+  })
+}
+
+function trendSVG(trend, cls) {
+  if (!trend?.length) return '<div style="color:var(--text3);font-size:11px;padding:6px">No data</div>'
+  const w=640, h=66, p=4, max=Math.max(...trend,1)
+  const step = (w-p*2)/(trend.length-1)
+  const col = {pos:'#4ade80',neg:'#f87171',neu:'#fbbf24'}[cls]||'#8b89a8'
+  const pts = trend.map((v,i) => `${p+i*step},${h-p-(v/max)*(h-p*2)}`)
+  const path = `M ${pts.join(' L ')}`
+  const area = `M ${p},${h} L ${pts.join(' L ')} L ${p+(trend.length-1)*step},${h} Z`
+  return `<svg viewBox="0 0 ${w} ${h}" class="trend-svg" preserveAspectRatio="none">
+    <defs><linearGradient id="tg${cls}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${col}" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="${col}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${area}" fill="url(#tg${cls})"/>
+    <path d="${path}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>`
+}
+
+function breakdownHTML(bd) {
+  const mx = Math.max(...bd.map(b => Math.abs(b.score)), 1)
+  return `<div class="section"><div class="sec-title">What's getting the reaction</div><div class="breakdown-list">
+    ${bd.map(b => { const c=sc(b.score); return `<div class="bd-row">
+      <div class="bd-label">${esc(b.aspect)}</div>
+      <div class="bd-track"><div class="bd-bar ${c}" style="width:${Math.round(Math.abs(b.score)/mx*100)}%"></div></div>
+      <div class="bd-num ${c}">${ss(b.score)}</div>
+    </div>` }).join('')}
+  </div></div>`
+}
+
+function entitiesHTML(ents) {
+  const col = {pos:'#4ade80',neg:'#f87171',neu:'#fbbf24'}
+  const bg  = {pos:'rgba(74,222,128,0.15)',neg:'rgba(248,113,113,0.15)',neu:'rgba(251,191,36,0.15)'}
+  return `<div class="section"><div class="sec-title">People &amp; orgs in this story</div><div class="entities-row">
+    ${ents.map(e => { const c=sc(e.score); return `<div class="entity-chip" data-name="${esc(e.name)}">
+      <div class="ent-av" style="background:${bg[c]};color:${col[c]}">${(e.name||'?').charAt(0).toUpperCase()}</div>
+      <span class="ent-name">${esc(e.name)}</span>
+      <span class="ent-score ${c}">${ss(e.score)}</span>
+    </div>` }).join('')}
+  </div></div>`
+}
+
+function articlesHTML(posts) {
+  return `<div class="section"><div class="sec-title">Source articles</div><div class="articles-list">
+    ${posts.map(p => `<div class="article-card">
+      <div class="art-meta">
+        <span class="art-source">${esc(p.source)}</span>
+        <span class="art-time">${esc(p.time_ago)}</span>
+        <div class="art-sdot" style="background:${scol(p.score)}"></div>
+      </div>
+      <div class="art-text">${esc(p.text)}</div>
+      ${p.url ? `<div class="art-footer"><a class="art-link" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Read article ↗</a></div>` : ''}
+    </div>`).join('')}
+  </div></div>`
+}
+
+// ── Personality detail ──
+async function openPersonality(name) {
+  activeId = null
+  renderList()
+  document.getElementById('mainPane').innerHTML =
+    '<div class="spinner-wrap" style="justify-content:center;padding:60px 0"><div class="spinner"></div></div>'
+  try {
+    const d = await fetch(`${API}/api/entities/${encodeURIComponent(name)}`).then(r => r.json())
+    renderPersonalityDetail(d)
+    setMood(d.score, name.split(' ')[0].toUpperCase())
+  } catch {
+    document.getElementById('mainPane').innerHTML = '<div style="padding:40px;color:var(--text3)">Failed to load.</div>'
+  }
+}
+
+function renderPersonalityDetail(d) {
+  const cls = sc(d.score)
+  const colMap = {pos:'#4ade80',neg:'#f87171',neu:'#fbbf24'}
+  const bgMap  = {pos:'rgba(74,222,128,0.18)',neg:'rgba(248,113,113,0.18)',neu:'rgba(251,191,36,0.18)'}
+
+  const topicsHtml = (d.topics||[]).map(t =>
+    `<div class="topic-chip">${EMOJI[t.topic]||'📰'} ${esc(t.topic)} <span style="color:${scol(t.score)};font-weight:700">${ss(t.score)}</span></div>`
+  ).join('')
+
+  document.getElementById('mainPane').innerHTML = `
+  <div class="person-detail">
+    <button class="back-btn" id="backBtn">← All topics</button>
+
+    <div class="pd-hero">
+      <div class="pd-avatar" style="background:${bgMap[cls]};color:${colMap[cls]}">${d.name.charAt(0).toUpperCase()}</div>
+      <div class="pd-info">
+        <div class="pd-name">${esc(d.name)}</div>
+        <div class="pd-meta">${d.mention_count} mention${d.mention_count!==1?'s':''} in the last 24h</div>
+      </div>
+      <div>
+        <div class="pd-score ${cls}">${ss(d.score)}</div>
+        <div class="pd-vibe">${vibe(d.score)}</div>
+      </div>
+    </div>
+
+    ${topicsHtml ? `<div class="section"><div class="sec-title">Appearing in these topics</div><div class="topics-chips">${topicsHtml}</div></div>` : ''}
+    ${d.articles?.length ? articlesHTML(d.articles.map(a => ({...a, source: a.source||a.topic||'Unknown', time_ago: a.time_ago||'recent'}))) : '<div style="color:var(--text3);font-size:12px;padding:20px 0">No articles with direct mentions found — entity appears in signal-level data.</div>'}
+  </div>`
+
+  document.getElementById('backBtn').addEventListener('click', () => { activeId = null; renderList(); renderOverview(); resetMood() })
+}
+
+// ── Personalities panel ──
+async function loadPersonalities() {
+  try {
+    const data = await fetch(`${API}/api/entities`).then(r => r.json())
+    const NOISE = new Set(['india','government','national','state','court','police','pm','cm','ministry','centre','union','new','high','india\'s'])
+    const people = data.filter(e => e.name?.length > 2 && !NOISE.has(e.name.toLowerCase()) && e.mention_count >= 2).slice(0,12)
+
+    if (!people.length) {
+      document.getElementById('personsList').innerHTML = '<div class="rp-empty">Personalities appear after first refresh</div>'
+      return
+    }
+    const colMap = {pos:'#4ade80',neg:'#f87171',neu:'#fbbf24'}
+    const bgMap  = {pos:'rgba(74,222,128,0.18)',neg:'rgba(248,113,113,0.18)',neu:'rgba(251,191,36,0.18)'}
+    document.getElementById('personsList').innerHTML = people.map(p => {
+      const cls = sc(p.score)
+      return `<div class="person-row" data-name="${esc(p.name)}">
+        <div class="person-av" style="background:${bgMap[cls]};color:${colMap[cls]}">${p.name.charAt(0).toUpperCase()}</div>
+        <div class="person-info">
+          <div class="person-name">${esc(p.name)}</div>
+          <div class="person-meta">${p.mention_count} mentions</div>
+        </div>
+        <div class="person-score ${cls}">${ss(p.score)}</div>
+      </div>`
+    }).join('')
+
+    document.querySelectorAll('.person-row').forEach(el => {
+      el.addEventListener('click', () => openPersonality(el.dataset.name))
+    })
+  } catch {
+    document.getElementById('personsList').innerHTML = '<div class="rp-empty">—</div>'
+  }
+}
+
+// ── Init ──
+loadSignals(true)
+loadPersonalities()
+setInterval(() => { loadSignals(true); loadPersonalities() }, 5 * 60 * 1000)
+setInterval(pollStatus, 60 * 1000)
+</script>
+</body>
+</html>
