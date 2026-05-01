@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -74,6 +74,13 @@ async def run_refresh() -> dict:
         refresh_state["last_refresh"] = datetime.now(timezone.utc).isoformat()
         refresh_state["last_signals_created"] = saved
         refresh_state["last_articles_fetched"] = len(new_posts)
+
+        # Prune signals older than 24h to keep local storage lean
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+        pruned = await get_signals_col().delete_many({"updated_at": {"$lt": cutoff}})
+        if pruned.deleted_count:
+            logger.info("Pruned %d signals older than 24h", pruned.deleted_count)
+
         return {
             "status": "ok",
             "new_articles": len(new_posts),

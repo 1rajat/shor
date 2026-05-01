@@ -173,6 +173,7 @@ def detect_signals(classified_posts: list[dict]) -> list[dict]:
                     "upvotes": p.get("upvotes", 0),
                     "comments": p.get("comments", 0),
                     "time_ago": p.get("time_ago", ""),
+                    "created_utc": p.get("created_utc", 0),
                 }
                 for p in top_posts[:MAX_POSTS_PER_SIGNAL]
             ],

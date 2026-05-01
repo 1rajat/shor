@@ -27,10 +27,16 @@ async def ensure_indexes():
 
     proc = get_processed_col()
     await proc.create_index([("url_hash", 1)], unique=True)
-    # TTL index: auto-delete after 48 hours so old articles can be re-evaluated
+    # TTL index: auto-delete after 12h so articles re-cycle within the same day
+    # Drop old index if it exists with a different TTL before recreating
+    try:
+        await proc.drop_index("processed_at_1")
+    except Exception:
+        pass
     await proc.create_index(
         [("processed_at", 1)],
-        expireAfterSeconds=48 * 3600,
+        expireAfterSeconds=12 * 3600,
+        name="processed_at_1",
     )
 
 

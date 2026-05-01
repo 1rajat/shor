@@ -32,10 +32,10 @@ body { font-family:'Space Grotesk',system-ui,sans-serif; background:var(--bg); c
 /* ── HEADER ── */
 header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--bg); z-index:100; }
 .logo { font-size:20px; font-weight:700; letter-spacing:-0.5px; background:linear-gradient(130deg,#a78bfa,#818cf8,#38bdf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; flex-shrink:0; cursor:pointer; }
-.mood-chip { display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:4px 12px 4px 10px; flex-shrink:0; transition:border-color 0.3s; }
+.mood-chip { display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:4px 12px 4px 10px; flex-shrink:0; }
 .mood-label { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
 .mood-track { width:80px; height:3px; background:linear-gradient(to right,var(--neg),var(--neu),var(--pos)); border-radius:2px; position:relative; }
-.mood-thumb { position:absolute; top:-5px; width:13px; height:13px; border-radius:50%; background:var(--text); border:2px solid var(--bg); transform:translateX(-50%); transition:left 0.5s ease; box-shadow:0 0 6px rgba(255,255,255,0.15); }
+.mood-thumb { position:absolute; top:-5px; width:13px; height:13px; border-radius:50%; background:var(--text); border:2px solid var(--bg); transform:translateX(-50%); transition:left 0.5s ease; }
 .mood-score { font-size:13px; font-weight:700; min-width:30px; }
 .filter-pills { display:flex; gap:4px; flex-shrink:0; }
 .pill { padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; border:1px solid var(--border); background:none; color:var(--text2); cursor:pointer; transition:all 0.1s; font-family:inherit; }
@@ -66,9 +66,9 @@ header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px
 .sb-count { font-size:10px; color:var(--text3); background:var(--bg3); padding:1px 7px; border-radius:10px; }
 .signal-list { overflow-y:auto; flex:1; }
 
-.signal-item { display:flex; align-items:center; gap:9px; padding:9px 13px; cursor:pointer; border-bottom:1px solid var(--border); border-left:2px solid transparent; transition:background 0.1s,border-left-color 0.15s; }
+.signal-item { display:flex; align-items:center; gap:9px; padding:9px 13px; cursor:pointer; border-bottom:1px solid var(--border); border-left:3px solid transparent; transition:background 0.1s,border-left-color 0.2s; }
 .signal-item:hover { background:var(--card); }
-.signal-item.active { background:var(--brand-dim); border-left-color:var(--brand); }
+.signal-item.active { background:var(--brand-dim); border-left-color:var(--brand) !important; }
 .sig-emoji { font-size:20px; line-height:1; flex-shrink:0; }
 .sig-body { flex:1; min-width:0; }
 .sig-topic { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -81,25 +81,51 @@ header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px
 .type-badge.spike{background:var(--neg-dim);color:var(--neg)} .type-badge.trending{background:var(--hot-dim);color:var(--hot)} .type-badge.sustained{background:var(--pos-dim);color:var(--pos)}
 
 /* ── MAIN ── */
-.main { flex:1; overflow-y:auto; padding:26px 28px; }
+.main { flex:1; overflow-y:auto; padding:22px 26px; }
 
-/* ── OVERVIEW ── */
-.overview-hero { margin-bottom:28px; }
-.ov-headline { font-size:22px; font-weight:700; letter-spacing:-0.5px; margin-bottom:6px; }
-.ov-subtitle { font-size:13px; color:var(--text2); line-height:1.6; max-width:560px; }
-.ov-subtitle strong { font-weight:600; }
-.ov-divider { height:1px; background:var(--border); margin:20px 0; }
-.ov-section { margin-bottom:24px; }
-.ov-section-title { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; margin-bottom:12px; }
-.ov-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
-.ov-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r2); padding:16px; cursor:pointer; transition:border-color 0.15s,background 0.1s; }
-.ov-card:hover { border-color:var(--border2); background:var(--bg3); }
-.ov-card-top { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-.ov-card-emoji { font-size:22px; line-height:1; }
-.ov-card-topic { font-size:13px; font-weight:600; flex:1; }
-.ov-card-score { font-size:18px; font-weight:700; }
+/* ── FEATURED HERO ── */
+.featured-hero {
+  border-radius:var(--r2);
+  padding:26px 28px;
+  margin-bottom:18px;
+  cursor:pointer;
+  transition:transform 0.15s;
+  background-color:#0f0f1a;
+  color:#f0eeff;
+  position:relative;
+  overflow:hidden;
+}
+.featured-hero:hover { transform:translateY(-1px); }
+.featured-eyebrow { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:6px; opacity:0.85; }
+.eyebrow-pulse { width:6px; height:6px; border-radius:50%; background:currentColor; animation:blink 2s infinite; flex-shrink:0; }
+.featured-main { display:flex; align-items:flex-start; gap:22px; }
+.featured-score-block { display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; padding-top:4px; }
+.featured-score { font-size:60px; font-weight:700; letter-spacing:-3px; line-height:1; }
+.featured-score-sub { font-size:8px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(240,238,255,0.4); }
+.featured-body { flex:1; min-width:0; }
+.featured-topic-row { display:flex; align-items:center; gap:10px; margin-bottom:5px; }
+.featured-emoji { font-size:30px; line-height:1; }
+.featured-topic { font-size:28px; font-weight:700; letter-spacing:-0.5px; color:#f0eeff; }
+.featured-vibe { font-size:13px; color:rgba(240,238,255,0.65); margin-bottom:10px; }
+.featured-aspects { font-size:11px; color:rgba(240,238,255,0.4); margin-bottom:10px; }
+.featured-summary { font-size:12px; color:rgba(240,238,255,0.6); line-height:1.75; max-width:500px; }
+.featured-stats { display:flex; gap:20px; margin-top:14px; }
+.featured-stat { font-size:11px; color:rgba(240,238,255,0.5); }
+.featured-stat strong { color:rgba(240,238,255,0.9); font-weight:700; }
+
+/* ── OVERVIEW GRID ── */
+.ov-divider { height:1px; background:var(--border); margin:16px 0; }
+.ov-section { margin-bottom:18px; }
+.ov-section-title { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; margin-bottom:10px; }
+.ov-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:8px; }
+.ov-card { background:var(--bg2); border:1px solid var(--border); border-left:3px solid var(--accent,var(--border2)); border-radius:var(--r2); padding:14px; cursor:pointer; transition:background 0.1s; }
+.ov-card:hover { background:var(--bg3); }
+.ov-card-top { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.ov-card-emoji { font-size:20px; line-height:1; }
+.ov-card-topic { font-size:12px; font-weight:600; flex:1; }
+.ov-card-score { font-size:17px; font-weight:700; }
 .ov-card-score.pos{color:var(--pos)} .ov-card-score.neg{color:var(--neg)} .ov-card-score.neu{color:var(--neu)}
-.ov-card-vibe { font-size:11px; color:var(--text2); margin-bottom:6px; }
+.ov-card-vibe { font-size:11px; color:var(--text2); margin-bottom:5px; }
 .ov-card-meta { font-size:10px; color:var(--text3); }
 
 /* ── DEEP DIVE ── */
@@ -143,25 +169,27 @@ header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px
 .entities-row { display:flex; flex-wrap:wrap; gap:7px; }
 .entity-chip { display:flex; align-items:center; gap:6px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:5px 12px 5px 7px; cursor:pointer; transition:border-color 0.1s; }
 .entity-chip:hover { border-color:var(--border2); }
-.ent-av { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; flex-shrink:0; }
+.ent-av { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
 .ent-name { font-size:11px; font-weight:500; color:var(--text2); }
 .ent-score { font-size:11px; font-weight:700; }
 .ent-score.pos{color:var(--pos)} .ent-score.neg{color:var(--neg)} .ent-score.neu{color:var(--neu)}
 
+/* ── ARTICLES ── */
 .articles-list { display:flex; flex-direction:column; gap:8px; }
 .article-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:13px; transition:border-color 0.1s; }
 .article-card:hover { border-color:var(--border2); }
-.art-meta { display:flex; align-items:center; gap:7px; margin-bottom:6px; }
+.art-meta { display:flex; align-items:center; gap:6px; margin-bottom:7px; flex-wrap:wrap; }
 .art-source { font-size:10px; font-weight:700; color:var(--text3); }
-.art-time { font-size:10px; color:var(--text3); }
+.art-sep { color:var(--text4); font-size:10px; }
+.art-time { font-size:10px; color:var(--text3); font-variant-numeric:tabular-nums; }
 .art-sdot { width:6px; height:6px; border-radius:50%; margin-left:auto; flex-shrink:0; }
 .art-text { font-size:12px; line-height:1.65; color:var(--text2); }
 .art-footer { margin-top:9px; }
-.art-link { font-size:11px; font-weight:600; color:var(--brand); text-decoration:none; padding:3px 10px; border:1px solid var(--brand-dim); border-radius:var(--r); transition:background 0.1s; }
+.art-link { font-size:11px; font-weight:600; color:var(--brand); text-decoration:none; padding:3px 10px; border:1px solid var(--brand-dim); border-radius:var(--r); transition:background 0.1s; display:inline-block; }
 .art-link:hover { background:var(--brand-dim); }
 
 /* ── RIGHT PANEL ── */
-.right-panel { width:206px; border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; }
+.right-panel { width:214px; border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; }
 .rp-hdr { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; padding:11px 13px 9px; border-bottom:1px solid var(--border); flex-shrink:0; }
 
 .national-mood { padding:14px 13px; border-bottom:1px solid var(--border); flex-shrink:0; }
@@ -173,26 +201,42 @@ header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px
 .rp-section-hdr { font-size:9px; font-weight:700; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; padding:11px 13px 9px; border-bottom:1px solid var(--border); flex-shrink:0; }
 .persons-list { overflow-y:auto; flex:1; }
 
-.person-row { display:flex; align-items:center; gap:8px; padding:9px 13px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; }
+/* ── PERSON ROW (with narrative) ── */
+.person-row { display:flex; align-items:flex-start; gap:9px; padding:10px 13px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; }
 .person-row:hover { background:var(--card); }
-.person-av { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
-.person-info { flex:1; min-width:0; }
+.person-av {
+  width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; flex-shrink:0;
+  box-shadow:0 0 0 2px rgba(255,255,255,0.06);
+}
+.person-info { flex:1; min-width:0; padding-top:1px; }
 .person-name { font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.person-meta { font-size:10px; color:var(--text3); margin-top:1px; }
-.person-score { font-size:13px; font-weight:700; flex-shrink:0; }
+.person-narrative { font-size:10px; color:var(--text3); margin-top:3px; line-height:1.35; }
+.person-score { font-size:13px; font-weight:700; flex-shrink:0; padding-top:2px; }
 .person-score.pos{color:var(--pos)} .person-score.neg{color:var(--neg)} .person-score.neu{color:var(--neu)}
 .rp-empty { padding:18px 13px; font-size:11px; color:var(--text3); text-align:center; }
 
-/* ── PERSONALITY DETAIL (shown in main pane) ── */
+/* ── ENTITY SEARCH ── */
+.entity-search-wrap { padding:8px 10px; border-bottom:1px solid var(--border); flex-shrink:0; position:relative; }
+.entity-search-wrap input { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:var(--r); padding:5px 8px 5px 24px; color:var(--text); font-size:11px; font-family:inherit; outline:none; transition:border-color 0.15s; }
+.entity-search-wrap input:focus { border-color:var(--brand); }
+.entity-search-wrap input::placeholder { color:var(--text3); }
+.entity-search-icon { position:absolute; left:18px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--text3); pointer-events:none; }
+.rp-updated { padding:5px 13px; font-size:9px; color:var(--text4); border-bottom:1px solid var(--border); flex-shrink:0; }
+
+/* ── PERSONALITY DETAIL ── */
 .person-detail { max-width:680px; }
 .pd-hero { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r2); padding:24px 26px; display:flex; gap:20px; align-items:center; margin-bottom:14px; }
-.pd-avatar { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; flex-shrink:0; }
-.pd-info { flex:1; }
-.pd-name { font-size:22px; font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
-.pd-meta { font-size:12px; color:var(--text2); margin-bottom:10px; }
+.pd-avatar { width:66px; height:66px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:700; flex-shrink:0; }
+.pd-info { flex:1; min-width:0; }
+.pd-name { font-size:22px; font-weight:700; letter-spacing:-0.5px; margin-bottom:3px; }
+.pd-mentions { font-size:11px; color:var(--text3); margin-bottom:8px; }
+.pd-narrative { font-size:13px; color:var(--text2); line-height:1.6; font-style:italic; padding:10px 14px; background:var(--bg3); border-radius:var(--r); border-left:3px solid var(--brand); }
+.pd-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
 .pd-score { font-size:48px; font-weight:700; letter-spacing:-2px; line-height:1; }
 .pd-score.pos{color:var(--pos);text-shadow:0 0 36px var(--pos-glow)} .pd-score.neg{color:var(--neg);text-shadow:0 0 36px var(--neg-glow)} .pd-score.neu{color:var(--neu)}
-.pd-vibe { font-size:12px; color:var(--text2); margin-top:4px; }
+.pd-vibe { font-size:11px; color:var(--text2); }
 .topics-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
 .topic-chip { font-size:11px; font-weight:600; padding:4px 12px; border-radius:20px; border:1px solid var(--border); color:var(--text2); }
 
@@ -201,7 +245,7 @@ header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px
 .spinner { width:14px; height:14px; border:2px solid var(--bg3); border-top-color:var(--brand); border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
 @keyframes spin { to{transform:rotate(360deg)} }
 
-/* ── LIGHT ── */
+/* ── LIGHT MODE ── */
 .light { --bg:#f5f4f0; --bg2:#eceae4; --bg3:#e2e0d8; --card:rgba(0,0,0,0.02); --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.15); --text:#12111a; --text2:#5a5875; --text3:#9a98b0; --text4:#c8c6d8; }
 .light .logo { background:linear-gradient(130deg,#7c3aed,#4f46e5); -webkit-background-clip:text; background-clip:text; }
 </style>
@@ -210,25 +254,21 @@ header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px
 
 <header>
   <div class="logo" id="logoBtn">SHOR</div>
-
-  <div class="mood-chip" id="moodChip">
+  <div class="mood-chip">
     <span class="mood-label" id="moodLabel">VIBE</span>
     <div class="mood-track"><div class="mood-thumb" id="moodThumb" style="left:50%"></div></div>
     <span class="mood-score" id="moodScore" style="color:var(--neu)">—</span>
   </div>
-
   <div class="filter-pills">
     <button class="pill active" data-filter="">All</button>
     <button class="pill neg"    data-filter="neg">Negative</button>
     <button class="pill pos"    data-filter="pos">Positive</button>
     <button class="pill neu"    data-filter="neu">Mixed</button>
   </div>
-
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
     <input type="text" id="searchInput" placeholder="Search topics…" autocomplete="off">
   </div>
-
   <div class="hdr-right">
     <span class="updated-tag" id="updatedTag">—</span>
     <div class="live-badge"><div class="live-dot"></div>LIVE</div>
@@ -238,7 +278,6 @@ header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px
 </header>
 
 <div class="layout">
-
   <aside class="sidebar">
     <div class="sb-hdr">
       <span class="sb-title">What's Shor-ing</span>
@@ -259,11 +298,15 @@ header { display:flex; align-items:center; gap:12px; padding:0 16px; height:54px
       <div class="nm-sub"  id="nmSub"></div>
     </div>
     <div class="rp-section-hdr">Who's in the News</div>
+    <div class="entity-search-wrap">
+      <span class="entity-search-icon">⌕</span>
+      <input type="text" id="entitySearch" placeholder="Search yourself…" autocomplete="off">
+    </div>
+    <div class="rp-updated" id="rpUpdated"></div>
     <div class="persons-list" id="personsList">
       <div class="rp-empty">Loading…</div>
     </div>
   </aside>
-
 </div>
 
 <script type="module">
@@ -276,6 +319,18 @@ const EMOJI = {
   Bollywood:'🎬', Technology:'💻', Crime:'🚨', Health:'🏥',
   Agriculture:'🌾', Defence:'🛡️', Business:'🏢', Environment:'🌿',
 }
+
+// Topic accent colors (hex so we can add alpha suffix)
+const TOPIC_COLOR = {
+  Politics:'#f87171', Cricket:'#4ade80', Bollywood:'#f472b6',
+  Economy:'#fbbf24', Business:'#60a5fa', Education:'#a78bfa',
+  Crime:'#fb923c', 'Stock Market':'#34d399', Weather:'#38bdf8',
+  Environment:'#86efac', Technology:'#818cf8', Health:'#fb7185',
+  Transport:'#94a3b8', Agriculture:'#a3e635', Defence:'#64748b',
+  'Petrol Prices':'#fbbf24', Electricity:'#fde047',
+  Unemployment:'#f9a8d4', Budget:'#c4b5fd', Railways:'#93c5fd',
+}
+
 const TYPE_ICON  = { spike:'🔥', trending:'📈', sustained:'⚡' }
 const TYPE_LABEL = { spike:'SPIKING', trending:'TRENDING', sustained:'SUSTAINED' }
 
@@ -296,6 +351,33 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
 
+function topicColor(topic) { return TOPIC_COLOR[topic] || '#8b89a8' }
+
+// Unique gradient avatar per name (no real photos — copyright-safe)
+function hashAvatar(name) {
+  let h = 0
+  for (const c of (name || '?')) h = ((h * 31) + c.charCodeAt(0)) & 0xffff
+  const hue = h % 360
+  const hue2 = (hue + 40) % 360
+  return {
+    bg: `linear-gradient(135deg, hsl(${hue},60%,26%), hsl(${hue2},65%,20%))`,
+    fg: `hsl(${hue},80%,75%)`,
+    ring: `hsl(${hue},60%,40%)`,
+  }
+}
+
+// Personality narrative — "China personality builder" style
+function personalityNarrative(score, topic, mentionCount) {
+  const where = topic ? ` in ${topic}` : ''
+  if (score >  70) return `Dominating positive coverage${where}`
+  if (score >  40) return `Broadly praised${where} · public mood positive`
+  if (score >  15) return `Getting mostly good press${where}`
+  if (score >  -15) return `Mixed mentions${where} — neither hero nor villain`
+  if (score > -40) return `Stirring controversy${where}`
+  if (score > -65) return `Under fire${where} · sentiment turning negative`
+  return `Facing intense criticism${where} · very negative buzz`
+}
+
 // ── State ──
 let signals = [], activeId = null, activeFilter = '', searchQuery = '', currentSkip = 0
 const PAGE = 50
@@ -304,21 +386,32 @@ let nationalAvg = 0
 // ── Theme ──
 const themeBtn = document.getElementById('themeBtn')
 let dark = true
-themeBtn.addEventListener('click', () => { dark = !dark; document.body.classList.toggle('light',!dark); themeBtn.textContent = dark?'Light':'Dark' })
+themeBtn.addEventListener('click', () => {
+  dark = !dark
+  document.body.classList.toggle('light', !dark)
+  themeBtn.textContent = dark ? 'Light' : 'Dark'
+})
 
 // ── Logo → overview ──
-document.getElementById('logoBtn').addEventListener('click', () => { activeId = null; renderList(); renderOverview(); resetMood() })
+document.getElementById('logoBtn').addEventListener('click', () => {
+  activeId = null; renderList(); renderOverview(); resetMood()
+})
 
 // ── Filters ──
 document.querySelectorAll('.pill').forEach(p => {
   p.addEventListener('click', () => {
     document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'))
-    p.classList.add('active'); activeFilter = p.dataset.filter; currentSkip = 0; loadSignals(true)
+    p.classList.add('active')
+    activeFilter = p.dataset.filter
+    currentSkip = 0
+    loadSignals(true)
   })
 })
-document.getElementById('searchInput').addEventListener('input', e => { searchQuery = e.target.value.toLowerCase(); renderList() })
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value.toLowerCase(); renderList()
+})
 
-// ── Refresh ──
+// ── Refresh (clears old data in backend, re-fetches) ──
 document.getElementById('refreshBtn').addEventListener('click', async () => {
   const btn = document.getElementById('refreshBtn')
   btn.disabled = true; btn.textContent = '↻ Running…'
@@ -327,7 +420,8 @@ document.getElementById('refreshBtn').addEventListener('click', async () => {
     const poll = setInterval(async () => {
       const st = await fetch(`${API}/api/status`).then(r => r.json()).catch(() => null)
       if (st && !st.refresh_running) {
-        clearInterval(poll); btn.disabled = false; btn.textContent = '↻ Refresh'
+        clearInterval(poll)
+        btn.disabled = false; btn.textContent = '↻ Refresh'
         loadSignals(true); loadPersonalities()
       }
     }, 3000)
@@ -367,12 +461,15 @@ function renderList(hasMore = false) {
   const list = signals.filter(s => !searchQuery || s.topic.toLowerCase().includes(searchQuery))
   document.getElementById('sbCount').textContent = list.length
   if (!list.length) {
-    document.getElementById('signalList').innerHTML = '<div style="padding:14px;color:var(--text3);font-size:11px">No signals yet. Data refreshing…</div>'
+    document.getElementById('signalList').innerHTML =
+      '<div style="padding:14px;color:var(--text3);font-size:11px">No signals yet. Data refreshing…</div>'
     return
   }
   const html = list.map(s => {
     const cls = sc(s.score)
-    return `<div class="signal-item${s.id===activeId?' active':''}" data-id="${s.id}" role="button" tabindex="0">
+    const tcolor = topicColor(s.topic)
+    const borderCol = s.id === activeId ? 'var(--brand)' : tcolor + 'aa'
+    return `<div class="signal-item${s.id===activeId?' active':''}" data-id="${s.id}" role="button" tabindex="0" style="border-left-color:${borderCol}">
       <div class="sig-emoji">${EMOJI[s.topic]||'📰'}</div>
       <div class="sig-body">
         <div class="sig-topic">${esc(s.topic)}</div>
@@ -385,15 +482,17 @@ function renderList(hasMore = false) {
       <div class="type-badge ${s.signal_type}">${TYPE_ICON[s.signal_type]||''} ${TYPE_LABEL[s.signal_type]||s.signal_type}</div>
     </div>`
   }).join('')
-  const more = hasMore ? `<div style="padding:10px 13px"><button onclick="loadSignals(false)" style="width:100%;background:none;border:1px solid var(--border);border-radius:var(--r);padding:7px;color:var(--text2);cursor:pointer;font-family:inherit;font-size:11px">Load more</button></div>` : ''
+  const more = hasMore
+    ? `<div style="padding:10px 13px"><button onclick="loadSignals(false)" style="width:100%;background:none;border:1px solid var(--border);border-radius:var(--r);padding:7px;color:var(--text2);cursor:pointer;font-family:inherit;font-size:11px">Load more</button></div>`
+    : ''
   document.getElementById('signalList').innerHTML = html + more
   document.querySelectorAll('.signal-item').forEach(el => {
     el.addEventListener('click', () => openSignal(el.dataset.id))
-    el.addEventListener('keydown', e => e.key==='Enter' && openSignal(el.dataset.id))
+    el.addEventListener('keydown', e => e.key === 'Enter' && openSignal(el.dataset.id))
   })
 }
 
-// ── Mood helpers ──
+// ── Mood ──
 function updateMoodGlobal() {
   if (!signals.length) return
   nationalAvg = Math.round(signals.reduce((a,s) => a+s.score,0) / signals.length)
@@ -411,7 +510,42 @@ function setMood(score, label) {
 }
 function resetMood() { setMood(nationalAvg, 'VIBE') }
 
-// ── Overview (homepage) ──
+// ── Featured hero card ──
+function featuredHeroHTML(s) {
+  const cls = sc(s.score)
+  const tcolor = topicColor(s.topic)
+  const scoreColor = cls==='pos'?'var(--pos)':cls==='neg'?'var(--neg)':'var(--neu)'
+  const bgStyle = `background-color:#0f0f1a;background-image:linear-gradient(135deg,${tcolor}30 0%,${tcolor}10 55%,transparent 100%);border:1px solid ${tcolor}35`
+  const aspects = (s.breakdown||[]).slice(0,2).map(b => esc(b.aspect)).join(' · ')
+  return `<div class="featured-hero" data-id="${s.id}" style="${bgStyle}">
+    <div class="featured-eyebrow" style="color:${tcolor}">
+      <span class="eyebrow-pulse"></span>
+      ${TYPE_LABEL[s.signal_type]||s.signal_type} · ${esc(s.region)}
+    </div>
+    <div class="featured-main">
+      <div class="featured-score-block">
+        <div class="featured-score" style="color:${scoreColor}">${ss(s.score)}</div>
+        <div class="featured-score-sub">out of ±100</div>
+      </div>
+      <div class="featured-body">
+        <div class="featured-topic-row">
+          <span class="featured-emoji">${EMOJI[s.topic]||'📰'}</span>
+          <span class="featured-topic">${esc(s.topic)}</span>
+        </div>
+        <div class="featured-vibe">${vibe(s.score)}</div>
+        ${aspects ? `<div class="featured-aspects">${aspects}</div>` : ''}
+        <div class="featured-summary">${esc(s.summary)}</div>
+        <div class="featured-stats">
+          <div class="featured-stat"><strong>${s.post_count}</strong> stories</div>
+          <div class="featured-stat"><strong>${s.spike_rate}%</strong> spike rate</div>
+          <div class="featured-stat"><strong>${s.duration_hours}h</strong> window</div>
+        </div>
+      </div>
+    </div>
+  </div>`
+}
+
+// ── Overview ──
 function renderOverview() {
   if (!signals.length) {
     document.getElementById('mainPane').innerHTML = `
@@ -424,33 +558,23 @@ function renderOverview() {
     return
   }
 
-  const totalPosts = signals.reduce((a,s) => a+s.post_count, 0)
-  const spikes    = signals.filter(s => s.signal_type==='spike')
-  const trending  = signals.filter(s => s.signal_type==='trending')
-  const sustained = signals.filter(s => s.signal_type==='sustained')
-
-  // build top aspects summary text
-  const topAspects = signals.flatMap(s => (s.breakdown||[]).slice(0,1)).slice(0,5).map(b => b.aspect).filter(Boolean)
-  const aspectText = topAspects.length ? `Headlines include: <em>${topAspects.join(', ')}</em>.` : ''
+  // Pick featured: highest spike, else first signal
+  const featured = signals.find(s => s.signal_type === 'spike' && Math.abs(s.score) > 20) || signals[0]
+  const rest = signals.filter(s => s.id !== featured.id)
+  const spikes    = rest.filter(s => s.signal_type === 'spike')
+  const trending  = rest.filter(s => s.signal_type === 'trending')
+  const sustained = rest.filter(s => s.signal_type === 'sustained')
 
   document.getElementById('mainPane').innerHTML = `
-    <div style="max-width:720px">
-      <div class="overview-hero">
-        <div class="ov-headline">🔊 What's making noise in India right now</div>
-        <div class="ov-subtitle">
-          India's mood is <strong style="color:${scol(nationalAvg)}">${vibe(nationalAvg)}</strong>
-          with an average vibe score of <strong style="color:${scol(nationalAvg)}">${ss(nationalAvg)}</strong>.
-          Tracking <strong>${signals.length} topics</strong> across <strong>${totalPosts} stories</strong> from 45+ news sources in the last 24h.
-          ${aspectText}
-        </div>
-      </div>
+    <div style="max-width:760px">
+      ${featuredHeroHTML(featured)}
       <div class="ov-divider"></div>
-      ${spikes.length ? ovSection('🔥 SPIKING NOW — Breaking through the noise', spikes) : ''}
-      ${trending.length ? ovSection('📈 TRENDING — Picking up fast', trending) : ''}
-      ${sustained.length ? ovSection('⚡ SUSTAINED — Ongoing stories', sustained) : ''}
+      ${spikes.length    ? ovSection('🔥 SPIKING NOW', spikes)    : ''}
+      ${trending.length  ? ovSection('📈 TRENDING', trending)     : ''}
+      ${sustained.length ? ovSection('⚡ SUSTAINED', sustained)   : ''}
     </div>`
 
-  document.querySelectorAll('.ov-card').forEach(el => {
+  document.querySelectorAll('.featured-hero, .ov-card').forEach(el => {
     el.addEventListener('click', () => openSignal(el.dataset.id))
   })
 }
@@ -461,15 +585,16 @@ function ovSection(title, list) {
     <div class="ov-grid">
       ${list.map(s => {
         const cls = sc(s.score)
+        const tcolor = topicColor(s.topic)
         const aspects = (s.breakdown||[]).slice(0,2).map(b => esc(b.aspect)).join(' · ')
-        return `<div class="ov-card" data-id="${s.id}">
+        return `<div class="ov-card" data-id="${s.id}" style="--accent:${tcolor}">
           <div class="ov-card-top">
             <span class="ov-card-emoji">${EMOJI[s.topic]||'📰'}</span>
             <span class="ov-card-topic">${esc(s.topic)}</span>
             <span class="ov-card-score ${cls}">${ss(s.score)}</span>
           </div>
           <div class="ov-card-vibe">${vibe(s.score)}</div>
-          ${aspects ? `<div class="ov-card-meta" style="margin-bottom:4px;font-size:10px;color:var(--text2)">${aspects}</div>` : ''}
+          ${aspects ? `<div class="ov-card-meta" style="color:var(--text2);margin-bottom:4px">${aspects}</div>` : ''}
           <div class="ov-card-meta">${s.post_count} stories · ${esc(s.region)}</div>
         </div>`
       }).join('')}
@@ -477,7 +602,7 @@ function ovSection(title, list) {
   </div>`
 }
 
-// ── Open signal detail ──
+// ── Signal detail ──
 async function openSignal(id) {
   activeId = id
   renderList()
@@ -492,20 +617,21 @@ async function openSignal(id) {
   }
 }
 
-// ── Signal detail ──
 function renderDetail(s) {
   const cls = sc(s.score)
   document.getElementById('mainPane').innerHTML = `
   <div class="deep-dive">
     <button class="back-btn" id="backBtn">← All topics</button>
-
     <div class="hero-card">
       <div class="score-block">
         <div class="score-num ${cls}">${ss(s.score)}</div>
         <div class="score-sub">out of ±100</div>
       </div>
       <div class="hero-body">
-        <div class="hero-topic-row"><span class="hero-emoji">${EMOJI[s.topic]||'📰'}</span><span class="hero-topic">${esc(s.topic)}</span></div>
+        <div class="hero-topic-row">
+          <span class="hero-emoji">${EMOJI[s.topic]||'📰'}</span>
+          <span class="hero-topic">${esc(s.topic)}</span>
+        </div>
         <div class="hero-vibe">${vibe(s.score)}</div>
         <div class="hero-badges">
           <span class="hero-badge">${TYPE_ICON[s.signal_type]||''} ${TYPE_LABEL[s.signal_type]||s.signal_type}</span>
@@ -514,24 +640,23 @@ function renderDetail(s) {
         </div>
       </div>
     </div>
-
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-label">Stories</div><div class="stat-val">${s.post_count}</div><div class="stat-hint">last ${s.duration_hours}h</div></div>
       <div class="stat-card"><div class="stat-label">Spike Rate</div><div class="stat-val">${s.spike_rate}%</div><div class="stat-hint">${s.signal_type}</div></div>
       <div class="stat-card"><div class="stat-label">Organic</div><div class="stat-val" style="color:var(--pos)">${Math.round((s.fact_check?.confidence||0)*100)}%</div><div class="stat-hint">${s.fact_check?.verdict||'—'}</div></div>
     </div>
-
     <div class="section">
       <div class="sec-title">24-Hour Activity</div>
       <div class="chart-wrap">${trendSVG(s.trend, cls)}</div>
     </div>
-
     ${s.breakdown?.length ? breakdownHTML(s.breakdown) : ''}
     ${s.entities?.length  ? entitiesHTML(s.entities)   : ''}
     ${s.posts?.length     ? articlesHTML(s.posts)       : ''}
   </div>`
 
-  document.getElementById('backBtn').addEventListener('click', () => { activeId = null; renderList(); renderOverview(); resetMood() })
+  document.getElementById('backBtn').addEventListener('click', () => {
+    activeId = null; renderList(); renderOverview(); resetMood()
+  })
   document.querySelectorAll('.entity-chip[data-name]').forEach(el => {
     el.addEventListener('click', () => openPersonality(el.dataset.name))
   })
@@ -567,22 +692,26 @@ function breakdownHTML(bd) {
 }
 
 function entitiesHTML(ents) {
-  const col = {pos:'#4ade80',neg:'#f87171',neu:'#fbbf24'}
-  const bg  = {pos:'rgba(74,222,128,0.15)',neg:'rgba(248,113,113,0.15)',neu:'rgba(251,191,36,0.15)'}
   return `<div class="section"><div class="sec-title">People &amp; orgs in this story</div><div class="entities-row">
-    ${ents.map(e => { const c=sc(e.score); return `<div class="entity-chip" data-name="${esc(e.name)}">
-      <div class="ent-av" style="background:${bg[c]};color:${col[c]}">${(e.name||'?').charAt(0).toUpperCase()}</div>
-      <span class="ent-name">${esc(e.name)}</span>
-      <span class="ent-score ${c}">${ss(e.score)}</span>
-    </div>` }).join('')}
+    ${ents.map(e => {
+      const c = sc(e.score)
+      const av = hashAvatar(e.name)
+      return `<div class="entity-chip" data-name="${esc(e.name)}">
+        <div class="ent-av" style="background:${av.bg};color:${av.fg}">${(e.name||'?').charAt(0).toUpperCase()}</div>
+        <span class="ent-name">${esc(e.name)}</span>
+        <span class="ent-score ${c}">${ss(e.score)}</span>
+      </div>`
+    }).join('')}
   </div></div>`
 }
 
+// Articles with exact published timestamp
 function articlesHTML(posts) {
   return `<div class="section"><div class="sec-title">Source articles</div><div class="articles-list">
     ${posts.map(p => `<div class="article-card">
       <div class="art-meta">
         <span class="art-source">${esc(p.source)}</span>
+        <span class="art-sep">·</span>
         <span class="art-time">${esc(p.time_ago)}</span>
         <div class="art-sdot" style="background:${scol(p.score)}"></div>
       </div>
@@ -609,8 +738,9 @@ async function openPersonality(name) {
 
 function renderPersonalityDetail(d) {
   const cls = sc(d.score)
-  const colMap = {pos:'#4ade80',neg:'#f87171',neu:'#fbbf24'}
-  const bgMap  = {pos:'rgba(74,222,128,0.18)',neg:'rgba(248,113,113,0.18)',neu:'rgba(251,191,36,0.18)'}
+  const av = hashAvatar(d.name)
+  const topicName = d.topics?.[0]?.topic || ''
+  const narrative = personalityNarrative(d.score, topicName, d.mention_count)
 
   const topicsHtml = (d.topics||[]).map(t =>
     `<div class="topic-chip">${EMOJI[t.topic]||'📰'} ${esc(t.topic)} <span style="color:${scol(t.score)};font-weight:700">${ss(t.score)}</span></div>`
@@ -619,58 +749,97 @@ function renderPersonalityDetail(d) {
   document.getElementById('mainPane').innerHTML = `
   <div class="person-detail">
     <button class="back-btn" id="backBtn">← All topics</button>
-
     <div class="pd-hero">
-      <div class="pd-avatar" style="background:${bgMap[cls]};color:${colMap[cls]}">${d.name.charAt(0).toUpperCase()}</div>
+      <div class="pd-avatar" style="background:${av.bg};color:${av.fg};box-shadow:0 0 0 3px ${av.ring}40">${d.name.charAt(0).toUpperCase()}</div>
       <div class="pd-info">
         <div class="pd-name">${esc(d.name)}</div>
-        <div class="pd-meta">${d.mention_count} mention${d.mention_count!==1?'s':''} in the last 24h</div>
+        <div class="pd-mentions">${d.mention_count} mention${d.mention_count!==1?'s':''} across current stories</div>
+        <div class="pd-narrative">${narrative}</div>
       </div>
-      <div>
+      <div class="pd-right">
         <div class="pd-score ${cls}">${ss(d.score)}</div>
         <div class="pd-vibe">${vibe(d.score)}</div>
       </div>
     </div>
-
     ${topicsHtml ? `<div class="section"><div class="sec-title">Appearing in these topics</div><div class="topics-chips">${topicsHtml}</div></div>` : ''}
-    ${d.articles?.length ? articlesHTML(d.articles.map(a => ({...a, source: a.source||a.topic||'Unknown', time_ago: a.time_ago||'recent'}))) : '<div style="color:var(--text3);font-size:12px;padding:20px 0">No articles with direct mentions found — entity appears in signal-level data.</div>'}
+    ${d.articles?.length
+      ? articlesHTML(d.articles.map(a => ({...a, source: a.source||a.topic||'Unknown', time_ago: a.time_ago||'recent'})))
+      : '<div style="color:var(--text3);font-size:12px;padding:20px 0">No articles with direct mentions found — entity appears in signal-level data.</div>'}
   </div>`
 
-  document.getElementById('backBtn').addEventListener('click', () => { activeId = null; renderList(); renderOverview(); resetMood() })
+  document.getElementById('backBtn').addEventListener('click', () => {
+    activeId = null; renderList(); renderOverview(); resetMood()
+  })
 }
 
-// ── Personalities panel ──
+// ── Who's in the News — narrative personality builder ──
+const NOISE_SET = new Set(['india','government','national','state','court','police','pm','cm',
+  'ministry','centre','union','new','high',"india's",'people','party','india's'])
+let allEntities = []
+
+function renderPersonalities(filter = '') {
+  const f = filter.toLowerCase().trim()
+  let list = allEntities.filter(e =>
+    e.name?.length > 2 && !NOISE_SET.has(e.name.toLowerCase()) && e.mention_count >= 1
+  )
+  if (f) {
+    list = allEntities.filter(e => e.name?.toLowerCase().includes(f))
+  } else {
+    list = list.slice(0, 14)
+  }
+
+  if (!list.length) {
+    document.getElementById('personsList').innerHTML = f
+      ? `<div class="rp-empty">No results for "${esc(f)}" — try pressing ↻ Refresh</div>`
+      : '<div class="rp-empty">Personalities appear after first refresh</div>'
+    return
+  }
+
+  document.getElementById('personsList').innerHTML = list.map(p => {
+    const cls = sc(p.score)
+    const av = hashAvatar(p.name)
+    const narrative = personalityNarrative(p.score, '', p.mention_count)
+    return `<div class="person-row" data-name="${esc(p.name)}">
+      <div class="person-av" style="background:${av.bg};color:${av.fg};box-shadow:0 0 0 2px ${av.ring}40">${p.name.charAt(0).toUpperCase()}</div>
+      <div class="person-info">
+        <div class="person-name">${esc(p.name)}</div>
+        <div class="person-narrative">${narrative}</div>
+      </div>
+      <div class="person-score ${cls}">${ss(p.score)}</div>
+    </div>`
+  }).join('')
+
+  document.querySelectorAll('.person-row').forEach(el => {
+    el.addEventListener('click', () => openPersonality(el.dataset.name))
+  })
+}
+
 async function loadPersonalities() {
   try {
     const data = await fetch(`${API}/api/entities`).then(r => r.json())
-    const NOISE = new Set(['india','government','national','state','court','police','pm','cm','ministry','centre','union','new','high','india\'s'])
-    const people = data.filter(e => e.name?.length > 2 && !NOISE.has(e.name.toLowerCase()) && e.mention_count >= 2).slice(0,12)
-
-    if (!people.length) {
-      document.getElementById('personsList').innerHTML = '<div class="rp-empty">Personalities appear after first refresh</div>'
-      return
-    }
-    const colMap = {pos:'#4ade80',neg:'#f87171',neu:'#fbbf24'}
-    const bgMap  = {pos:'rgba(74,222,128,0.18)',neg:'rgba(248,113,113,0.18)',neu:'rgba(251,191,36,0.18)'}
-    document.getElementById('personsList').innerHTML = people.map(p => {
-      const cls = sc(p.score)
-      return `<div class="person-row" data-name="${esc(p.name)}">
-        <div class="person-av" style="background:${bgMap[cls]};color:${colMap[cls]}">${p.name.charAt(0).toUpperCase()}</div>
-        <div class="person-info">
-          <div class="person-name">${esc(p.name)}</div>
-          <div class="person-meta">${p.mention_count} mentions</div>
-        </div>
-        <div class="person-score ${cls}">${ss(p.score)}</div>
-      </div>`
-    }).join('')
-
-    document.querySelectorAll('.person-row').forEach(el => {
-      el.addEventListener('click', () => openPersonality(el.dataset.name))
-    })
+    allEntities = data
+    const now = new Date()
+    const h = now.getHours() % 12 || 12
+    const m = String(now.getMinutes()).padStart(2, '0')
+    const ampm = now.getHours() < 12 ? 'am' : 'pm'
+    document.getElementById('rpUpdated').textContent = `Updated ${h}:${m} ${ampm}`
+    renderPersonalities(document.getElementById('entitySearch')?.value || '')
   } catch {
     document.getElementById('personsList').innerHTML = '<div class="rp-empty">—</div>'
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('entitySearch')?.addEventListener('input', e => {
+    renderPersonalities(e.target.value)
+  })
+  document.getElementById('entitySearch')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const val = e.target.value.trim()
+      if (val) openPersonality(val)
+    }
+  })
+})
 
 // ── Init ──
 loadSignals(true)

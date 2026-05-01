@@ -1,11 +1,28 @@
+import time
 from typing import Optional
 from bson import ObjectId
 from app.db.mongo import get_signals_col
 
 
+def _format_ts(ts: float) -> str:
+    from datetime import datetime, timezone, timedelta
+    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+    ist = dt + timedelta(hours=5, minutes=30)
+    day = ist.day
+    month = ist.strftime("%b")
+    hour = ist.hour % 12 or 12
+    minute = f"{ist.minute:02d}"
+    period = "am" if ist.hour < 12 else "pm"
+    return f"{day} {month}, {hour}:{minute} {period}"
+
+
 def _serialize(doc: dict) -> dict:
     if doc and "_id" in doc:
         doc["id"] = str(doc.pop("_id"))
+    for post in doc.get("posts", []):
+        ts = post.get("created_utc", 0)
+        if ts:
+            post["time_ago"] = _format_ts(ts)
     return doc
 
 
