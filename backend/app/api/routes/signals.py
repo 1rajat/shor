@@ -33,10 +33,13 @@ async def get_signal(signal_id: str):
 
 
 @router.post("/refresh")
-async def refresh_signals(background_tasks: BackgroundTasks):
+async def refresh_signals(background_tasks: BackgroundTasks, force: bool = False):
     from app.main import run_refresh, refresh_state
+    from app.db.mongo import get_db
     if refresh_state["running"]:
         return {"status": "already_running"}
-    # run in background so HTTP response returns immediately
+    if force:
+        # Clear processed cache so all recent articles are re-classified
+        await get_db()["processed_articles"].delete_many({})
     background_tasks.add_task(run_refresh)
-    return {"status": "started", "message": "Refresh started. Poll /api/status for progress."}
+    return {"status": "started", "force": force}

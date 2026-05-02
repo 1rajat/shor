@@ -5,6 +5,7 @@ explicitly include in their RSS feeds for syndication. We always link back to th
 original article URL. This is standard RSS aggregation (Google News, Feedly, etc.)
 and is compliant with each outlet's syndication intent.
 """
+import logging
 import re
 import time
 import hashlib
@@ -12,6 +13,8 @@ import concurrent.futures
 
 import feedparser
 import httpx
+
+logger = logging.getLogger("shor.rss")
 
 MAX_AGE_HOURS = 24
 PER_FEED_LIMIT = 30
@@ -82,6 +85,25 @@ RSS_SOURCES: dict[str, str] = {
     # ── Regional extra ────────────────────────────────────────────────
     "TOI Chennai":       "https://timesofindia.indiatimes.com/rssfeeds/7503221.cms",
     "Hindustan Hindi":   "https://www.livehindustan.com/rss/feed.xml",
+    # ── Government / Official ─────────────────────────────────────────
+    "PIB India":         "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+    # ── Hindi National ────────────────────────────────────────────────
+    "Dainik Jagran":     "https://www.jagran.com/rss/news-national.xml",
+    "Dainik Bhaskar":    "https://www.bhaskar.com/rss-feed/8491/",
+    "Rajasthan Patrika": "https://www.patrika.com/rss/national-news.xml",
+    # ── Regional / South ──────────────────────────────────────────────
+    "Mathrubhumi":       "https://english.mathrubhumi.com/news/india/feed",
+    "The Hindu Business":"https://www.thehindubusinessline.com/news/feeder/default.rss",
+    "Deccan Herald":     "https://www.deccanherald.com/stories.rss",
+    # ── Digital / Analysis ────────────────────────────────────────────
+    "The Quint":         "https://www.thequint.com/feed",
+    "Newslaundry":       "https://www.newslaundry.com/feed",
+    "Caravan Magazine":  "https://caravanmagazine.in/feed",
+    # ── Sports ────────────────────────────────────────────────────────
+    "Sportskeeda":       "https://www.sportskeeda.com/feed",
+    # ── Markets / Finance ─────────────────────────────────────────────
+    "MC Markets":        "https://www.moneycontrol.com/rss/marketreports.xml",
+    "ET Economy":        "https://economictimes.indiatimes.com/economy/rssfeeds/1373380680.cms",
 }
 
 _STRIP_HTML = re.compile(r"<[^>]+>")
@@ -122,14 +144,15 @@ def _fetch_one(source: str, url: str) -> list[dict]:
     seen: set[str] = set()
 
     try:
-        # Use httpx to follow redirects, then hand content to feedparser
         with httpx.Client(timeout=12, follow_redirects=True,
                           headers={"User-Agent": _UA}) as client:
             resp = client.get(url)
             if resp.status_code != 200:
+                logger.debug("Feed %s returned HTTP %d", source, resp.status_code)
                 return []
             feed = feedparser.parse(resp.content)
-    except Exception:
+    except Exception as exc:
+        logger.debug("Feed %s failed: %s", source, exc)
         return []
 
     for entry in feed.entries[:PER_FEED_LIMIT]:
@@ -170,15 +193,24 @@ def _fetch_one(source: str, url: str) -> list[dict]:
 def scrape_posts(limit: int = 500) -> list[dict]:
     all_posts: list[dict] = []
     seen: set[str] = set()
+    feed_ok = 0
+    feed_fail = 0
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         futures = {ex.submit(_fetch_one, src, url): src for src, url in RSS_SOURCES.items()}
         for fut in concurrent.futures.as_completed(futures):
-            for post in fut.result():
+            results = fut.result()
+            if results:
+                feed_ok += 1
+            else:
+                feed_fail += 1
+            for post in results:
                 h = post["url_hash"]
                 if h not in seen:
                     seen.add(h)
                     all_posts.append(post)
 
+    logger.info("RSS scrape complete: %d/%d feeds OK, %d unique articles",
+                feed_ok, feed_ok + feed_fail, len(all_posts))
     all_posts.sort(key=lambda p: p["created_utc"], reverse=True)
     return all_posts[:limit]

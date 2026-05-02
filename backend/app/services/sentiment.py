@@ -1,7 +1,10 @@
 import json
+import logging
 import re
-import httpx
-from app.config import OLLAMA_BASE_URL, OLLAMA_MODEL
+from groq import AsyncGroq
+from app.config import GROQ_API_KEY, GROQ_MODEL
+
+logger = logging.getLogger("shor.sentiment")
 
 VALID_TOPICS = [
     "Politics", "Cricket", "Economy", "Stock Market", "Weather",
@@ -45,6 +48,8 @@ def _extract_json(raw: str) -> dict:
 
 
 _VALID_TOPICS_SET = set(VALID_TOPICS)
+# Client is None when API key is not configured — classify_post returns fallback
+_client = AsyncGroq(api_key=GROQ_API_KEY) if GROQ_API_KEY and GROQ_API_KEY != "your_groq_api_key_here" else None
 
 
 def _normalise(result: dict) -> dict:
@@ -84,21 +89,22 @@ def _normalise(result: dict) -> dict:
 
 
 async def classify_post(text: str) -> dict:
+    if _client is None:
+        logger.warning("GROQ_API_KEY not set — add it to .env to enable LLM classification")
+        return _FALLBACK.copy()
     prompt = PROMPT_TEMPLATE.format(
         topics=", ".join(VALID_TOPICS),
         text=text[:800],
     )
-    payload = {
-        "model": OLLAMA_MODEL,
-        "prompt": prompt,
-        "stream": False,
-        "options": {"temperature": 0.05},
-    }
     try:
-        async with httpx.AsyncClient(timeout=60) as client:
-            resp = await client.post(f"{OLLAMA_BASE_URL}/api/generate", json=payload)
-            resp.raise_for_status()
-            raw = resp.json().get("response", "")
-            return _normalise(_extract_json(raw))
-    except Exception:
+        response = await _client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.05,
+            max_tokens=256,
+        )
+        raw = response.choices[0].message.content or ""
+        return _normalise(_extract_json(raw))
+    except Exception as exc:
+        logger.debug("classify_post failed: %s", exc)
         return _FALLBACK.copy()

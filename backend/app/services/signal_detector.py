@@ -101,6 +101,26 @@ def _dominant(values: list[str]) -> str:
     return max(set(values), key=values.count)
 
 
+def _dedup_posts(posts: list[dict]) -> list[dict]:
+    """Remove near-duplicate articles (same story from multiple sources).
+    Keeps the post with the highest upvote/engagement; falls back to first seen."""
+    seen_text: dict[str, dict] = {}
+    seen_url: set[str] = set()
+    for post in sorted(posts, key=lambda p: p.get("upvotes", 0), reverse=True):
+        url = post.get("url", "")
+        if url and url in seen_url:
+            continue
+        # fingerprint = first 90 chars of text lowercased (catches syndicated articles)
+        fp = post.get("text", "")[:90].lower().strip()
+        if fp and fp in seen_text:
+            continue
+        if url:
+            seen_url.add(url)
+        if fp:
+            seen_text[fp] = post
+    return list(seen_text.values()) if seen_text else posts
+
+
 def detect_signals(classified_posts: list[dict]) -> list[dict]:
     # Group by primary LLM topic
     grouped: dict[str, list[dict]] = defaultdict(list)
@@ -116,6 +136,7 @@ def detect_signals(classified_posts: list[dict]) -> list[dict]:
     now_dt = datetime.now(timezone.utc)
 
     for topic, posts in grouped.items():
+        posts = _dedup_posts(posts)
         if len(posts) < MIN_POSTS_PER_SIGNAL:
             continue
 

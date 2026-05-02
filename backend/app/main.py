@@ -11,6 +11,15 @@ from app.api.routes.signals import router as signals_router
 from app.api.routes.entities import router as entities_router
 from app.api.routes.regions import router as regions_router
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(levelname)-7s  %(name)s  %(message)s",
+    datefmt="%H:%M:%S",
+)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+logging.getLogger("groq").setLevel(logging.WARNING)
 logger = logging.getLogger("shor")
 
 REFRESH_INTERVAL_SECONDS = 5 * 60  # 5 minutes
@@ -38,9 +47,10 @@ async def run_refresh() -> dict:
 
     refresh_state["running"] = True
     try:
-        # Fetch newest articles; dedup skips anything already classified
-        BATCH = 60  # llama3.2:3b ~5s each → 60 × 5s ≈ 5 min per cycle
+        BATCH = 50
+        logger.info("Refresh started — scraping RSS feeds")
         raw_posts = await _asyncio.to_thread(scrape_posts, 200)
+        logger.info("Scraped %d raw articles from feeds", len(raw_posts))
 
         new_posts = []
         for p in raw_posts:
@@ -50,16 +60,24 @@ async def run_refresh() -> dict:
                 break
 
         if not new_posts:
+            logger.info("No new articles (all already processed)")
             refresh_state["last_refresh"] = datetime.now(timezone.utc).isoformat()
             return {"status": "ok", "new_articles": 0, "signals_created": 0}
 
-        # Ollama is serial internally — no point exceeding 1 concurrent call
+        logger.info("Classifying %d new articles via LLM", len(new_posts))
         classified = []
-        for post in new_posts:
+        for i, post in enumerate(new_posts, 1):
             result = await classify_post(post["text"])
             classified.append({**post, **result})
+            if i % 10 == 0:
+                logger.info("  classified %d/%d  last: %s → %s %+d",
+                            i, len(new_posts),
+                            post.get("source", "?"),
+                            result.get("sentiment", "?"),
+                            result.get("score", 0))
 
         signals = detect_signals(list(classified))
+        logger.info("Detected %d topic signals", len(signals))
 
         saved = 0
         for sig in signals:
@@ -67,15 +85,16 @@ async def run_refresh() -> dict:
             sig["fact_check"] = fc
             await upsert_signal(sig)
             saved += 1
+            logger.info("  saved signal: %-15s  score=%+d  posts=%d  type=%s",
+                        sig.get("topic","?"), sig.get("score",0),
+                        sig.get("post_count",0), sig.get("signal_type","?"))
 
-        # Mark all processed
         await mark_processed([p["url_hash"] for p in new_posts if p.get("url_hash")])
 
         refresh_state["last_refresh"] = datetime.now(timezone.utc).isoformat()
         refresh_state["last_signals_created"] = saved
         refresh_state["last_articles_fetched"] = len(new_posts)
 
-        # Prune signals older than 24h to keep local storage lean
         cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
         pruned = await get_signals_col().delete_many({"updated_at": {"$lt": cutoff}})
         if pruned.deleted_count:
