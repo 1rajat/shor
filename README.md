@@ -4,6 +4,9 @@ Real-time sentiment analysis platform for Indian news. Scrapes 60+ RSS sources, 
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green) ![MongoDB](https://img.shields.io/badge/MongoDB-Motor-brightgreen) ![LLaMA](https://img.shields.io/badge/LLM-LLaMA--3.1--8b-orange)
 
+<img width="1470" height="769" alt="image" src="https://github.com/user-attachments/assets/4c8d3801-431d-4542-935c-7dfa2e0672b0" />
+
+
 ## What It Does
 
 - Scrapes 60+ Indian news sources every 5 minutes (NDTV, Times of India, The Hindu, Economic Times, Amar Ujala, Dainik Jagran, and more)
